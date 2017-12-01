@@ -9,6 +9,7 @@ import objects.BoardSpace;
 import objects.Tile;
 
 public class GameActions {
+	//private boolean dragging = false;
 
 	// Add tile to player's box
 	public static void AddToPlayerBox(JPanel southPanel, JPanel playerPanel, ArrayList<Tile> playerTiles, Tile newTile) {

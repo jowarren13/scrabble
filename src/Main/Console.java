@@ -1,6 +1,7 @@
 package Main;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -11,6 +12,7 @@ import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -43,6 +45,10 @@ public class Console {
 		frame.setTitle("Scrabble");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
+		
+		// Mouse listener
+		frame.addMouseMotionListener(new MouseInput(frame));
+		frame.addMouseListener(new MouseInput(frame));
 		
 		// Create layout layered panes
 		north = new JPanel();
@@ -94,6 +100,7 @@ public class Console {
 			}
 		}
 		
+		
 		// Add board image and grid to center pane
 		center.add(boardImage, new Integer(0),0);
 		center.add(boardGrid, new Integer(1),0);
@@ -106,6 +113,7 @@ public class Console {
 		
 		// Add player box to south panel
 		south.add(playerBox);
+		
 		
 		// Add panels to frame
 		frame.add(north, BorderLayout.NORTH);
