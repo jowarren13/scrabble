@@ -2,44 +2,36 @@ package Main;
 
 import java.util.ArrayList;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import objects.BoardSpace;
 import objects.Tile;
 
 public class GameActions {
-	//private boolean dragging = false;
 
-	// Add tile to player's box
-	public static void AddToPlayerBox(JPanel southPanel, JPanel playerPanel, ArrayList<Tile> playerTiles, Tile newTile) {
+	public static void AddToPlayerBox(Main.Console frame, BoardSpace[][] playerSpaces, ArrayList<Tile> playerTiles, Tile newTile) {
+		// Add tile to player tiles array
 		playerTiles.add(newTile);
-		JLabel tileImage = new JLabel();
-		tileImage.setIcon(Tile.getImg(playerTiles.get(playerTiles.size()-1)));
-		playerPanel.add(tileImage);
-		playerPanel.repaint();
-		playerPanel.validate();
-		southPanel.repaint();
-		southPanel.validate();
+		
+		// Determine which space to put tile
+		int Location = playerTiles.lastIndexOf(newTile);
+
+		// Add tile to player space & change status
+		BoardSpace.setTile(playerSpaces[0][Location], newTile);
+
+		// Repaint the space
+		playerSpaces[0][Location].repaint();
+		playerSpaces[0][Location].validate();
+
 	}
 	
 	// Add tile to board
 	static void AddTileToBoard(BoardSpace [][] spaces, ArrayList<Tile> boardTiles, Tile newTile, int locx, int locy) {
-		// Create label to add to board space panel
-		JLabel tileImage = new JLabel();
-		tileImage.setIcon(Tile.getImg(newTile));
-		
-		// Add label to boardSpace
-		spaces[locx][locy].add(tileImage);
+		// Set board space tile
+		BoardSpace.setTile(spaces[locx][locy], newTile);
 		
 		// Add tile to boardTiles array
 		boardTiles.add(newTile);
-		
-		// Set the board space tile and status
-		BoardSpace.setTile(spaces[locx][locy], newTile);
-		//BoardSpace.setTileImage(spaces[locx][locy], newTile);
-		BoardSpace.setStatus(spaces[locx][locy], Info.TAKEN);
-		//spaces[locx][locy].add(BoardSpace.getTileImage(spaces[locx][locy]));
+
+		// Repaint the board space
 		spaces[locx][locy].repaint();
 		spaces[locx][locy].validate();
 	}

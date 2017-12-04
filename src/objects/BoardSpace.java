@@ -1,5 +1,7 @@
 package objects;
 
+import java.awt.Point;
+
 import javax.swing.JPanel;
 
 import Main.Info;
@@ -13,19 +15,18 @@ public class BoardSpace extends JPanel {
 	private int id;
 	private Boolean status;
 	private Tile boardTile;
-	private int locx;
-	private int locy;
+	private Point loc;
 	
 	public BoardSpace(String type, int id, Boolean status, int locx, int locy) {
 		this.type = type;
 		this.id = id;
 		this.status = status;
 		this.boardTile = null;
-		this.locx = locx;
-		this.locy = locy;
+		this.loc = new Point();
+		this.loc.setLocation(locx, locy);
 	}
 	
-	public static BoardSpace [][] setSpaces(BoardSpace [][] spaces) {
+	public static BoardSpace [][] setBoardSpaces(BoardSpace [][] spaces) {
 		// Set star
 		spaces[7][7] = new BoardSpace(Info.STAR, 97, !Info.TAKEN, 7, 7);
 		
@@ -112,6 +113,17 @@ public class BoardSpace extends JPanel {
 		return spaces;
 	}
 	
+	public static BoardSpace [][] setPlayerSpaces(BoardSpace [][] spaces) {
+		int spaceID = 225;
+		// Set player spaces
+		for (int j = 0; j<7; j++) {
+			spaces[0][j] = new BoardSpace(Info.PLAYERSPACE, spaceID, !Info.TAKEN, 0, j);
+			spaceID++;
+		}
+		
+		return spaces;
+	}
+	
 	public static int getID(BoardSpace space) {
 		return space.id;
 	}
@@ -130,17 +142,26 @@ public class BoardSpace extends JPanel {
 	
 	public static void setTile(BoardSpace space, Tile selectedTile) {
 		space.boardTile = selectedTile;
+		space.add(selectedTile);
+		BoardSpace.setStatus(space, Info.TAKEN);
+		space.revalidate();
+		space.repaint();
+	}
+	
+	public static void removeTile(BoardSpace space, Tile t) {
+		space.boardTile = null;
+		space.remove(t);
+		BoardSpace.setStatus(space, !Info.TAKEN);
+		space.revalidate();
+		space.repaint();
 	}
 	
 	public static void setStatus(BoardSpace space, Boolean status) {
 		space.status = status;
 	}
 	
-	public static int getLocX(BoardSpace space) {
-		return space.locx;
+	public static Point getPoint(BoardSpace space) {
+		return space.loc;
 	}
 	
-	public static int getLocY(BoardSpace space) {
-		return space.locy;
-	}
 }

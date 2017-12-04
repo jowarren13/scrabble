@@ -1,7 +1,5 @@
 package Main;
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -12,7 +10,6 @@ import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -35,6 +32,7 @@ public class Console {
 	private JPanel boardImage;
 	private JButton start;
 	private BoardSpace [][] spaces;
+	private BoardSpace [][] playerSpaces;
 	
 	public Console () throws IOException{
 		// Create frame
@@ -45,10 +43,6 @@ public class Console {
 		frame.setTitle("Scrabble");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
-		
-		// Mouse listener
-		frame.addMouseMotionListener(new MouseInput(frame));
-		frame.addMouseListener(new MouseInput(frame));
 		
 		// Create layout layered panes
 		north = new JPanel();
@@ -78,7 +72,7 @@ public class Console {
 		
 		// Create panels to add to boardGrid
 		spaces = new BoardSpace [15][15];
-		BoardSpace.setSpaces(spaces);
+		BoardSpace.setBoardSpaces(spaces);
 		
 		// Set grid constraints
 		GridBagConstraints cGrid = new GridBagConstraints();
@@ -97,6 +91,10 @@ public class Console {
 				spaces[i][j].setOpaque(false);
 				spaces[i][j].setPreferredSize(new Dimension((int) Info.GRIDSIZE,(int) Info.GRIDSIZE));
 				boardGrid.add(spaces[i][j], cGrid);
+				
+				// Add Mouse listeners to each boardspace
+				spaces[i][j].addMouseMotionListener(new MouseInput(spaces[i][j]));
+				spaces[i][j].addMouseListener(new MouseInput(spaces[i][j]));
 			}
 		}
 		
@@ -110,6 +108,30 @@ public class Console {
 		playerBox = new JPanel();
 		playerBox.setLayout(new GridLayout(1,7, 10, 0));
 		
+		// Create playerBox spaces
+		playerSpaces = new BoardSpace [1][7];
+		BoardSpace.setPlayerSpaces(playerSpaces);
+		
+		// Add playerSpaces to playerBox
+		for (int j = 0; j < 7; j++) {
+			// panel constraints
+			cGrid.gridx = 0; 				// grid x location
+			cGrid.gridy = j; 				// grid y location
+			cGrid.gridheight = 1;			// spans 1 row
+			cGrid.gridwidth = 1;			// spans 1 column
+			cGrid.weightx = 0.0;
+			cGrid.weighty = 0.0;
+			cGrid.fill = GridBagConstraints.BOTH;	// Resize veritically & horizontally
+			
+			// Set size of board space and add to grid
+			playerSpaces[0][j].setOpaque(false);
+			playerSpaces[0][j].setPreferredSize(new Dimension((int) Info.GRIDSIZE,(int) Info.GRIDSIZE));
+			playerBox.add(playerSpaces[0][j], cGrid);
+			
+			// Add Mouse listeners to each boardspace
+			playerSpaces[0][j].addMouseMotionListener(new MouseInput(playerSpaces[0][j]));
+			playerSpaces[0][j].addMouseListener(new MouseInput(playerSpaces[0][j]));
+		}
 		
 		// Add player box to south panel
 		south.add(playerBox);
@@ -164,9 +186,9 @@ public class Console {
 		return frame.playerBox;
 	}
 	
-	/*public JPanel getBoard(Console frame) {
-		return frame.board;
-	}*/
+	public BoardSpace[][] getPlayerSpaces(Console frame) {
+		return frame.playerSpaces;
+	}
 	
 	public BoardSpace[][] getBoardSpaces(Console frame) {
 		return frame.spaces;

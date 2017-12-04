@@ -25,7 +25,7 @@ public class Player {
 			while (player.playerTiles.size() < 7 || player.playerTiles == null ) { 
 				randomTile = rand.nextInt(TileBox.size());
 				selectedTile = TileBox.remove(randomTile);
-				GameActions.AddToPlayerBox(frame.getSouth(frame), frame.getPlayerBox(frame), player.playerTiles, selectedTile);
+				GameActions.AddToPlayerBox(frame, frame.getPlayerSpaces(frame), player.playerTiles, selectedTile);
 			}
 		} catch (Exception EmptyTileBox) {
 			System.out.println("The TileBox is empty.");

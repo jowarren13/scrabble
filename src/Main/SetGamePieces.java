@@ -235,10 +235,14 @@ public class SetGamePieces {
 	static Tile createTile(String letter, int id, int points) throws IOException {
 		String imgLoc = "/" + letter + ".png";
 		int location = -1;
-		ImageIcon icon = new ImageIcon(SetGamePieces.class.getResource(imgLoc));
-		//ImageIcon img = ImageIO.read(SetGamePieces.class.getResource(imgLoc));
-		Tile tile = new Tile(letter, id, location, icon, points);
+		ImageIcon letterImg = new ImageIcon(SetGamePieces.class.getResource(imgLoc));
+		Tile tile = new Tile(letter, id, location, letterImg, points);
+		tile.setIcon(letterImg);
 		
+		// Add mouse listener
+		/*
+		tile.addMouseListener(new MouseInput(tile));
+		tile.addMouseMotionListener(new MouseInput(tile)); */
 		return tile;
 	}
 }

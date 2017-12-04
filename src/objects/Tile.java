@@ -1,8 +1,13 @@
 package objects;
 
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
-public class Tile {
+public class Tile extends JLabel{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String letter;
 	private int id;
 	private int location;
