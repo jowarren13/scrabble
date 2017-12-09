@@ -1,5 +1,6 @@
 package Main;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -20,7 +21,11 @@ import objects.BoardSpace;
 import javax.imageio.ImageIO;
 
 public class Console {
-	private JFrame frame; 
+	private JFrame gameConsole; 
+	private JPanel centerConsole;
+	private JLayeredPane gameContainer;
+	private JPanel playerPanel;
+	private JPanel gamePanel;
 	private JPanel north;
 	private JPanel south;
 	private JPanel east;
@@ -35,14 +40,35 @@ public class Console {
 	private BoardSpace [][] playerSpaces;
 	
 	public Console () throws IOException{
-		// Create frame
-		frame = new JFrame();
+		// Create gameConsole
+		gameConsole = new JFrame();
 		final int frameWidth = 850;
 		final int frameHeight = 950;
-		frame.setPreferredSize(new Dimension(frameWidth, frameHeight));
-		frame.setTitle("Scrabble");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(new BorderLayout());
+		gameConsole.setPreferredSize(new Dimension(frameWidth, frameHeight));
+		gameConsole.setTitle("Scrabble");
+		gameConsole.setLayout(new GridBagLayout());
+		gameConsole.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.ipadx = 810;
+		c.ipady = 950;
+		
+		// Create center console panel and add to gameConsole
+		centerConsole = new JPanel();
+		centerConsole.setLayout(new BorderLayout());
+		gameConsole.add(centerConsole,c);
+		
+		
+		// Create layered pane that holds the board and playerbox
+		gameContainer = new JLayeredPane();
+		gameContainer.setBounds(0,0,810,950);
+		centerConsole.add(gameContainer, BorderLayout.CENTER);
+		
+/*		
+		gamePanel = new JPanel();
+		gamePanel.setLayout(new BorderLayout());
+		gameContainer.add(gamePanel, new Integer(0),0);
 		
 		// Create layout layered panes
 		north = new JPanel();
@@ -53,13 +79,13 @@ public class Console {
 		
 		// Set pane/panel locations and sizes
 		south.setPreferredSize(new Dimension(810,75));
-		center.setBounds(0,0,810,810);
+		center.setBounds(0,0,810,810); */
 		
 		// Create board image label and add to JPanel
 		BufferedImage scrabbleImage = ImageIO.read(Console.class.getResource("/board.jpg"));	
 		JLabel background = new JLabel(new ImageIcon(scrabbleImage));
 		boardImage = new JPanel();
-		boardImage.setBounds(0, 0, 810, 815);
+		boardImage.setBounds(0, 0, 810, 810);
 		boardImage.add(background);
 		boardImage.setOpaque(true);
 		
@@ -99,14 +125,25 @@ public class Console {
 		}
 		
 		
-		// Add board image and grid to center pane
+		/*/ Add board image and grid to center pane
 		center.add(boardImage, new Integer(0),0);
-		center.add(boardGrid, new Integer(1),0);
+		center.add(boardGrid, new Integer(1),0);*/
+		
+		// Add to layeredPane
+		gameContainer.add(boardImage, new Integer(0),0);
+		gameContainer.add(boardGrid, new Integer(1),0);
 		
 		
-		// Create player box panel
+		// Create player box panel 
+		playerPanel = new JPanel();
+		playerPanel.setLayout(new GridBagLayout());
 		playerBox = new JPanel();
 		playerBox.setLayout(new GridLayout(1,7, 10, 0));
+		
+		GridBagConstraints cp = new GridBagConstraints();
+		//cp.fill = GridBagConstraints.BOTH;
+		cp.ipadx = 50;
+		cp.ipady = 50;
 		
 		// Create playerBox spaces
 		playerSpaces = new BoardSpace [1][7];
@@ -134,69 +171,82 @@ public class Console {
 		}
 		
 		// Add player box to south panel
-		south.add(playerBox);
+		//south.add(playerBox);
+		playerPanel.add(playerBox, cp);
+		
+		// Add player box to bottom of layeredPane
+		playerPanel.setBounds(0,825,810,75);
+		gameContainer.add(playerPanel, new Integer(0),0);
 		
 		
-		// Add panels to frame
-		frame.add(north, BorderLayout.NORTH);
-		frame.add(south, BorderLayout.SOUTH);
-		frame.add(east, BorderLayout.EAST);
-		frame.add(west, BorderLayout.WEST);
-		frame.add(center, BorderLayout.CENTER);
+		/*/ Add panels to gamePanel
+		gamePanel.add(north, BorderLayout.NORTH);
+		gamePanel.add(south, BorderLayout.SOUTH);
+		gamePanel.add(east, BorderLayout.EAST);
+		gamePanel.add(west, BorderLayout.WEST);
+		gamePanel.add(center, BorderLayout.CENTER);*/
 		
-		frame.pack();
 		
-		// Make frame visible
-		frame.setVisible(true);
+		// Add gameContainer to gameConsole
+		//gameConsole.add(gameContainer);
+		
+		gameConsole.pack();
+		
+		// Make gameConsole visible
+		gameConsole.setVisible(true);
 	}
 	
-	public JFrame getConsole(Console frame) {
-		return frame.getConsole(frame);
+	public JLayeredPane getGameContainer(Console gameConsole) {
+		return gameConsole.gameContainer;
 	}
 	
-	public JPanel getNorth(Console frame) {
-		return frame.north;
+	public JPanel getGamePanel(Console gameConsole) {
+		return gameConsole.gamePanel;
 	}
 	
-	public JPanel getSouth(Console frame) {
-		return frame.south;
+	public JPanel getNorth(Console gameConsole) {
+		return gameConsole.north;
 	}
 	
-	public JPanel getEast(Console frame) {
-		return frame.east;
+	public JPanel getSouth(Console gameConsole) {
+		return gameConsole.south;
 	}
 	
-	public JPanel getWest(Console frame) {
-		return frame.west;
+	public JPanel getEast(Console gameConsole) {
+		return gameConsole.east;
 	}
 	
-	public JLayeredPane getCenter(Console frame) {
-		return frame.center;
+	public JPanel getWest(Console gameConsole) {
+		return gameConsole.west;
 	}
 	
-	public JPanel getSplash(Console frame) {
-		return frame.splash;
+	public JLayeredPane getCenter(Console gameConsole) {
+		return gameConsole.center;
 	}
 	
-	public JButton getStart(Console frame) {
-		return frame.start;
+	public JPanel getSplash(Console gameConsole) {
+		return gameConsole.splash;
 	}
 	
-	public JPanel getPlayerBox(Console frame) {
-		return frame.playerBox;
+	public JButton getStart(Console gameConsole) {
+		return gameConsole.start;
 	}
 	
-	public BoardSpace[][] getPlayerSpaces(Console frame) {
-		return frame.playerSpaces;
+	public JPanel getPlayerBox(Console gameConsole) {
+		return gameConsole.playerBox;
 	}
 	
-	public BoardSpace[][] getBoardSpaces(Console frame) {
-		return frame.spaces;
+	public BoardSpace[][] getPlayerSpaces(Console gameConsole) {
+		return gameConsole.playerSpaces;
 	}
 	
-	// Creates the GUI frame with splash page
-	static void launchGame(Console frame, JPanel splash, JButton start) {
-		ActionListener startGame = new SplashPageListener(frame);
+	public BoardSpace[][] getBoardSpaces(Console gameConsole) {
+		return gameConsole.spaces;
+	}
+	
+	// Creates the GUI gameConsole with splash page
+	static void launchGame(Console gameConsole, JPanel splash, JButton start) {
+		ActionListener startGame = new SplashPageListener(gameConsole);
 		start.addActionListener(startGame);
 	}
 	
