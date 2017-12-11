@@ -1,6 +1,5 @@
 package Main;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -63,23 +62,9 @@ public class Console {
 		// Create layered pane that holds the board and playerbox
 		gameContainer = new JLayeredPane();
 		gameContainer.setBounds(0,0,810,950);
+		gameContainer.addMouseListener(new MouseInput(gameContainer));
+		gameContainer.addMouseMotionListener(new MouseInput(gameContainer));
 		centerConsole.add(gameContainer, BorderLayout.CENTER);
-		
-/*		
-		gamePanel = new JPanel();
-		gamePanel.setLayout(new BorderLayout());
-		gameContainer.add(gamePanel, new Integer(0),0);
-		
-		// Create layout layered panes
-		north = new JPanel();
-		south = new JPanel();
-		east = new JPanel();
-		west = new JPanel();
-		center = new JLayeredPane();
-		
-		// Set pane/panel locations and sizes
-		south.setPreferredSize(new Dimension(810,75));
-		center.setBounds(0,0,810,810); */
 		
 		// Create board image label and add to JPanel
 		BufferedImage scrabbleImage = ImageIO.read(Console.class.getResource("/board.jpg"));	
@@ -117,18 +102,9 @@ public class Console {
 				spaces[i][j].setOpaque(false);
 				spaces[i][j].setPreferredSize(new Dimension((int) Info.GRIDSIZE,(int) Info.GRIDSIZE));
 				boardGrid.add(spaces[i][j], cGrid);
-				
-				// Add Mouse listeners to each boardspace
-				spaces[i][j].addMouseMotionListener(new MouseInput(spaces[i][j]));
-				spaces[i][j].addMouseListener(new MouseInput(spaces[i][j]));
 			}
 		}
-		
-		
-		/*/ Add board image and grid to center pane
-		center.add(boardImage, new Integer(0),0);
-		center.add(boardGrid, new Integer(1),0);*/
-		
+
 		// Add to layeredPane
 		gameContainer.add(boardImage, new Integer(0),0);
 		gameContainer.add(boardGrid, new Integer(1),0);
@@ -140,8 +116,8 @@ public class Console {
 		playerBox = new JPanel();
 		playerBox.setLayout(new GridLayout(1,7, 10, 0));
 		
+		// Create player box constraints
 		GridBagConstraints cp = new GridBagConstraints();
-		//cp.fill = GridBagConstraints.BOTH;
 		cp.ipadx = 50;
 		cp.ipady = 50;
 		
@@ -164,31 +140,14 @@ public class Console {
 			playerSpaces[0][j].setOpaque(false);
 			playerSpaces[0][j].setPreferredSize(new Dimension((int) Info.GRIDSIZE,(int) Info.GRIDSIZE));
 			playerBox.add(playerSpaces[0][j], cGrid);
-			
-			// Add Mouse listeners to each boardspace
-			playerSpaces[0][j].addMouseMotionListener(new MouseInput(playerSpaces[0][j]));
-			playerSpaces[0][j].addMouseListener(new MouseInput(playerSpaces[0][j]));
 		}
 		
 		// Add player box to south panel
-		//south.add(playerBox);
 		playerPanel.add(playerBox, cp);
 		
 		// Add player box to bottom of layeredPane
 		playerPanel.setBounds(0,825,810,75);
 		gameContainer.add(playerPanel, new Integer(0),0);
-		
-		
-		/*/ Add panels to gamePanel
-		gamePanel.add(north, BorderLayout.NORTH);
-		gamePanel.add(south, BorderLayout.SOUTH);
-		gamePanel.add(east, BorderLayout.EAST);
-		gamePanel.add(west, BorderLayout.WEST);
-		gamePanel.add(center, BorderLayout.CENTER);*/
-		
-		
-		// Add gameContainer to gameConsole
-		//gameConsole.add(gameContainer);
 		
 		gameConsole.pack();
 		

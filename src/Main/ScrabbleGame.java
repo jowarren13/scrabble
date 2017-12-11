@@ -18,9 +18,6 @@ public class ScrabbleGame {
 		// Create new player and add tiles
 		Player p1 = new Player(Info.HUMAN, true);
 		Player.setPlayerTiles(frame, p1, TileBox);
-		//ArrayList<Tile> playerTiles = new ArrayList<Tile>();
-		//GameActions.AddToPlayerBox(frame.getSouth(frame), frame.getPlayerBox(frame), playerTiles, TileBox.remove(0));
-		//GameActions.AddToPlayerBox(frame.getSouth(frame), frame.getPlayerBox(frame), playerTiles, TileBox.remove(1));
 
 		
 		// Test adding tiles to board

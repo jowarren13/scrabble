@@ -17,7 +17,6 @@ public class SplashPageListener implements ActionListener {
 	
 	public void actionPerformed(ActionEvent event) {
 		splash.setVisible(false);
-		frame.getBoard(frame).setVisible(true);
 	}
 
 }
