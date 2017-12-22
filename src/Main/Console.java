@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
+import objects.BoardPane;
 import objects.BoardSpace;
 
 import javax.imageio.ImageIO;
@@ -22,7 +23,7 @@ import javax.imageio.ImageIO;
 public class Console {
 	private JFrame gameConsole; 
 	private JPanel centerConsole;
-	private JLayeredPane gameContainer;
+	private BoardPane gameContainer;
 	private JPanel playerPanel;
 	private JPanel gamePanel;
 	private JPanel north;
@@ -60,10 +61,13 @@ public class Console {
 		
 		
 		// Create layered pane that holds the board and playerbox
-		gameContainer = new JLayeredPane();
+		gameContainer = new BoardPane();
 		gameContainer.setBounds(0,0,810,950);
-		gameContainer.addMouseListener(new MouseInput(gameContainer));
-		gameContainer.addMouseMotionListener(new MouseInput(gameContainer));
+		
+		MouseInput mouseActions = new MouseInput();
+
+		gameContainer.addMouseMotionListener(mouseActions);
+		gameContainer.addMouseListener(mouseActions);
 		centerConsole.add(gameContainer, BorderLayout.CENTER);
 		
 		// Create board image label and add to JPanel

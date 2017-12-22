@@ -1,37 +1,22 @@
 package Main;
 
-import java.awt.Component;
 import java.awt.Point;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.JLayeredPane;
 
 import objects.BoardSpace;
 import objects.Tile;
+import objects.BoardPane;
 
-public class MouseInput extends MouseAdapter {
+public class MouseInput implements MouseMotionListener, MouseListener {
 	/**
 	 * 
 	 */
-	private Component mouseArea;
-	private boolean dragging;
-	private Tile draggingTile;
-	private BoardSpace currentSpace;
-	private BoardSpace startingSpace;
-	private Component selectedObject;
-	Component [] panelObjects;
-	private JLayeredPane dragLayer;
-	private Point dragPoint;
-	private int dragWidth;
-	private int dragHeight;
 
-	public MouseInput(Component mouseArea) {
-		// TODO Auto-generated constructor stub
-		super();
-		mouseArea = this.mouseArea;
-	}
-	
+	private BoardPane dragLayer;
 
     void eventOutput(String eventDescription, MouseEvent e) {
     	Point p = e.getPoint();
@@ -42,129 +27,107 @@ public class MouseInput extends MouseAdapter {
                 + "\n");
     }
     
+    @Override
     public void mouseMoved(MouseEvent e) {
         //eventOutput("Mouse moved", e);
     }
     
+    @Override
     public void mouseDragged(MouseEvent e) {
+    	// Set dragLayer
+		dragLayer = BoardPane.getDragLayer((BoardPane) e.getSource());
+		
+    	System.out.println("Dragging is " + BoardPane.getDragStatus(dragLayer));
     	
-    	if (dragging) {
-			System.out.println("Dragging");
-		}
-    	
-        if (!dragging) {
-        	return;
-        } else {
-        	System.out.println("Dragging " + Tile.getLetter(draggingTile));
-            int x = e.getPoint().x - dragWidth;
-    		int y = e.getPoint().y - dragHeight;
-    		draggingTile.setLocation(x, y);
-    		
-    		draggingTile.repaint();
-        }
+    	// Drag tile across board
+    	if (BoardPane.getDragStatus(dragLayer)) {
+			int x = e.getPoint().x - BoardPane.getDragWidth(dragLayer);
+			int y = e.getPoint().y - BoardPane.getDragHeight(dragLayer);
+			BoardPane.getDragTile(dragLayer).setLocation(x, y);
+			BoardPane.getDragTile(dragLayer).repaint();
+			
+            System.out.println("Dragging Tile " + Tile.getLetter(BoardPane.getDragTile(dragLayer)));
+    	}
     }
 
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		//eventOutput("Mouse Clicked", e);
+		eventOutput("Mouse Clicked", e);
 	}
 
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		/*
-		dragPoint = e.getPoint();
-		selectedObject = e.getComponent().getComponentAt(dragPoint);
-		// Get the current space
-
-		while (!selectedObject.getClass().getSimpleName().equals("BoardSpace")) {
-			try {
-				dragPoint = selectedObject.getMousePosition();
-				selectedObject = selectedObject.getComponentAt(dragPoint);
-			} catch (NullPointerException illegalSpace){
-				currentSpace = startingSpace;
-				break;
-			}
-		}
 		
-		if (selectedObject.getClass().getSimpleName().equals("BoardSpace")) {
-			currentSpace = (BoardSpace) selectedObject;
-			System.out.println(BoardSpace.getID(currentSpace));
-		} */
+		eventOutput("Mouse entered", e);
+
 	}
 
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		//eventOutput("Mouse Exited", e);
+		eventOutput("Mouse Exited", e);
 	}
 
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		dragLayer = (JLayeredPane) e.getSource();
-		dragPoint = e.getPoint();
-		selectedObject = e.getComponent().getComponentAt(dragPoint);
+		eventOutput("Mouse Pressed", e);
 		
-		// Get the current space
-		while (!selectedObject.getClass().getSimpleName().equals("BoardSpace")) {
+		// Set dragLayer, dragPoint, and selectedObject
+		BoardPane.setDragLayer((BoardPane) e.getSource());
+		dragLayer = (BoardPane) e.getSource();
+		BoardPane.setDragPoint(dragLayer, e.getPoint());
+		BoardPane.setSelectedObj(dragLayer, e.getComponent().getComponentAt(BoardPane.getDragPoint(dragLayer)));
+
+		// Find the current board space
+		while (!BoardPane.getSelectedObj(dragLayer).getClass().getSimpleName().equals("BoardSpace")) {
 			try {
-				dragPoint = selectedObject.getMousePosition();
-				selectedObject = selectedObject.getComponentAt(dragPoint);
+				BoardPane.setDragPoint(dragLayer, BoardPane.getSelectedObj(dragLayer).getMousePosition());
+				BoardPane.setSelectedObj(dragLayer, BoardPane.getSelectedObj(dragLayer).getComponentAt(BoardPane.getDragPoint(dragLayer)));
 			} catch (NullPointerException illegalSpace){
 				return;
 			}
 		}
 		
-		currentSpace = (BoardSpace) selectedObject;
-		startingSpace = (BoardSpace) selectedObject;
+		// Set the current board space & starting space
+		BoardPane.setCurrentSpace(dragLayer, (BoardSpace) BoardPane.getSelectedObj(dragLayer));
+		BoardPane.setStartingSpace(dragLayer, BoardPane.getCurrentSpace(dragLayer));
 		
-		// If the boardspace has a tile, remove Tile from boardspace and add to dragging layer
-		if (BoardSpace.Taken(currentSpace)) {
+		// If the board space has a tile, remove Tile from board space then add to dragging layer
+		if (BoardSpace.Taken(BoardPane.getCurrentSpace(dragLayer))) {
 			// get dragging tile
-			draggingTile = BoardSpace.getTile(currentSpace);
-			dragging = true;
+			BoardPane.setDragTile(dragLayer, BoardSpace.getTile(BoardPane.getCurrentSpace(dragLayer)));
+			BoardPane.setDragStatus(dragLayer, true);
 			
 			// remove tile and repaint space
-			BoardSpace.removeTile(currentSpace, draggingTile);
-			currentSpace.revalidate();
-			currentSpace.repaint();
+			BoardSpace.removeTile(BoardPane.getCurrentSpace(dragLayer), BoardPane.getDragTile(dragLayer));
+			BoardPane.getCurrentSpace(dragLayer).revalidate();
+			BoardPane.getCurrentSpace(dragLayer).repaint();
 			
-			// Add tile to dragging layer
-			dragWidth = draggingTile.getWidth() / 2;
-			dragHeight = draggingTile.getHeight() / 2;
-			int x = e.getPoint().x - dragWidth;
-			int y = e.getPoint().y - dragHeight;
-
-			draggingTile.setLocation(x, y);
-			dragLayer.add(draggingTile, JLayeredPane.DRAG_LAYER);
-			draggingTile.revalidate();
-			draggingTile.repaint();
+			// Add tile to dragging layer at specified location
+			int x = e.getPoint().x - BoardPane.getDragWidth(dragLayer);
+			int y = e.getPoint().y - BoardPane.getDragHeight(dragLayer);
+			BoardPane.getDragTile(dragLayer).setLocation(x, y);
+			dragLayer.add(BoardPane.getDragTile(dragLayer), JLayeredPane.DRAG_LAYER);
+			BoardPane.getDragTile(dragLayer).revalidate();
+			BoardPane.getDragTile(dragLayer).repaint();
 			
-			System.out.println("Selected Tile " + Tile.getLetter(draggingTile));
+			System.out.println("Selected Tile " + Tile.getLetter(BoardPane.getDragTile(dragLayer)));
 		} else {
 			return;
 		}
-		
 	}
+
 
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		/*
 		// TODO Auto-generated method stub
-		if (!BoardSpace.Taken(currentSpace)) {
-			return;
-		} else {
-			dragging = false; 
-			BoardSpace.setTile(currentSpace, draggingTile);
-			draggingTile = null;
-			currentSpace.repaint();
-			currentSpace.revalidate();
-		} */
+		eventOutput("Mouse Released", e);
 	}
 
 }

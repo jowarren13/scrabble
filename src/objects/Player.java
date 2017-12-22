@@ -41,12 +41,8 @@ public class Player {
 		return player.isTurn;
 	}
 	
-	public static void setTurnFalse(Player player) {
-		player.isTurn = false;
-	}
-	
-	public static void setTurnTrue(Player player) {
-		player.isTurn = true;
+	public static void setTurn(Player player, Boolean status) {
+		player.isTurn = status;
 	}
 	
 	public static String getType(Player player) {
