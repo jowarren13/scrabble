@@ -36,8 +36,6 @@ public class MouseInput implements MouseMotionListener, MouseListener {
     public void mouseDragged(MouseEvent e) {
     	// Set dragLayer
 		dragLayer = BoardPane.getDragLayer((BoardPane) e.getSource());
-		
-    	System.out.println("Dragging is " + BoardPane.getDragStatus(dragLayer));
     	
     	// Drag tile across board
     	if (BoardPane.getDragStatus(dragLayer)) {
@@ -53,22 +51,18 @@ public class MouseInput implements MouseMotionListener, MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		eventOutput("Mouse Clicked", e);
+		//eventOutput("Mouse Clicked", e);
 	}
 
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		
 		eventOutput("Mouse entered", e);
-
 	}
 
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
 		eventOutput("Mouse Exited", e);
 	}
 
@@ -84,18 +78,18 @@ public class MouseInput implements MouseMotionListener, MouseListener {
 		BoardPane.setSelectedObj(dragLayer, e.getComponent().getComponentAt(BoardPane.getDragPoint(dragLayer)));
 
 		// Find the current board space
-		while (!BoardPane.getSelectedObj(dragLayer).getClass().getSimpleName().equals("BoardSpace")) {
-			try {
+		try {
+			while (!BoardPane.getSelectedObj(dragLayer).getClass().getSimpleName().equals("BoardSpace")) {
 				BoardPane.setDragPoint(dragLayer, BoardPane.getSelectedObj(dragLayer).getMousePosition());
 				BoardPane.setSelectedObj(dragLayer, BoardPane.getSelectedObj(dragLayer).getComponentAt(BoardPane.getDragPoint(dragLayer)));
-			} catch (NullPointerException illegalSpace){
-				return;
 			}
+		} catch (NullPointerException illegalSpace) {
+			return;
 		}
 		
 		// Set the current board space & starting space
 		BoardPane.setCurrentSpace(dragLayer, (BoardSpace) BoardPane.getSelectedObj(dragLayer));
-		BoardPane.setStartingSpace(dragLayer, BoardPane.getCurrentSpace(dragLayer));
+		BoardPane.setStartingSpace(dragLayer, (BoardSpace) BoardPane.getSelectedObj(dragLayer));
 		
 		// If the board space has a tile, remove Tile from board space then add to dragging layer
 		if (BoardSpace.Taken(BoardPane.getCurrentSpace(dragLayer))) {
@@ -126,8 +120,55 @@ public class MouseInput implements MouseMotionListener, MouseListener {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		eventOutput("Mouse Released", e);
+		if (BoardPane.getDragStatus(dragLayer) == true) {
+			// Change drag status to false
+			BoardPane.setDragStatus(dragLayer, false);
+			
+			// Set dragLayer & remove tile
+			dragLayer = BoardPane.getDragLayer((BoardPane) e.getSource());
+			dragLayer.remove(BoardPane.getDragTile(dragLayer));
+			dragLayer.revalidate();
+			dragLayer.repaint();
+			
+			//get selected object at given point
+			BoardPane.setDragPoint(dragLayer, e.getPoint());
+			BoardPane.setSelectedObj(dragLayer, e.getComponent().getComponentAt(BoardPane.getDragPoint(dragLayer)));
+			
+			// Find the current board space
+			try {
+				while(!BoardPane.getSelectedObj(dragLayer).getClass().getSimpleName().equals("BoardSpace")) {
+					BoardPane.setDragPoint(dragLayer, BoardPane.getSelectedObj(dragLayer).getMousePosition());
+					BoardPane.setSelectedObj(dragLayer, BoardPane.getSelectedObj(dragLayer).getComponentAt(BoardPane.getDragPoint(dragLayer)));
+				}
+			} catch (NullPointerException illegalSpace) {
+				// if released on an invalid space, put tile back in starting space
+				BoardSpace.setTile(BoardPane.getStartingSpace(dragLayer), BoardPane.getDragTile(dragLayer));
+				BoardPane.getStartingSpace(dragLayer).revalidate();
+				BoardPane.getStartingSpace(dragLayer).repaint();
+				
+				BoardPane.resetPane(dragLayer);
+				return;
+			}
+			
+			// Set the current board space & starting space
+			BoardPane.setCurrentSpace(dragLayer, (BoardSpace) BoardPane.getSelectedObj(dragLayer));
+			
+			// If space is not taken, add tile to space, otherwise put back in starting space
+			if (!BoardSpace.Taken(BoardPane.getCurrentSpace(dragLayer))) {
+				BoardSpace.setTile(BoardPane.getCurrentSpace(dragLayer), BoardPane.getDragTile(dragLayer));
+				BoardPane.getCurrentSpace(dragLayer).revalidate();
+				BoardPane.getCurrentSpace(dragLayer).repaint();
+				//BoardPane.setDragTile(dragLayer, null);
+			} else {
+				BoardSpace.setTile(BoardPane.getStartingSpace(dragLayer), BoardPane.getDragTile(dragLayer));
+				BoardPane.getStartingSpace(dragLayer).revalidate();
+				BoardPane.getStartingSpace(dragLayer).repaint();
+			}
+			
+			BoardPane.resetPane(dragLayer);
+		}
+		
+		
 	}
 
 }

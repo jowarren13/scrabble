@@ -34,6 +34,17 @@ public class BoardPane extends JLayeredPane {
 		this.dragHeight = 51/2;
 	}
 	
+	public static void resetPane(BoardPane board) {
+		board.dragging = false;
+		board.draggingTile = null;
+		board.currentSpace = null;
+		board.startingSpace = null;
+		board.selectedObject = null;
+		board.panelObjects = null;
+		board.dragLayer = null;
+		board.dragPoint = null;
+	}
+	
 	public static Boolean getDragStatus(BoardPane board) {
 		return board.dragging;
 	}

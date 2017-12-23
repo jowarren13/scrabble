@@ -74,7 +74,7 @@ public class Console {
 		BufferedImage scrabbleImage = ImageIO.read(Console.class.getResource("/board.jpg"));	
 		JLabel background = new JLabel(new ImageIcon(scrabbleImage));
 		boardImage = new JPanel();
-		boardImage.setBounds(0, 0, 810, 810);
+		boardImage.setBounds(0, 0, 810, 815);
 		boardImage.add(background);
 		boardImage.setOpaque(true);
 		
